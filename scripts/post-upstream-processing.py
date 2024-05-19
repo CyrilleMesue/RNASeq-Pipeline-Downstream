@@ -11,6 +11,12 @@ def process_count_data(metadata_path, counts_data_path, output_path):
     # rename columns
     count_data_df.columns = ["geneSymbol"] + [name.split("/")[-1].split(".")[0] for name in count_data_df.columns[1:]]
 
+    # Assume 'sampleAccession' column in metadata contains the sample names in the desired order
+    desired_order = metadata_df['sampleAccession'].tolist()
+
+    # Reorder the columns of count data DataFrame according to the desired order
+    count_data_df = count_data_df.reindex(columns=["geneSymbol"]+desired_order)
+
     # Remove duplicates based on GeneSymbol column
     count_data_df = count_data_df.drop_duplicates(keep='first')
     count_data_df = count_data_df.drop_duplicates(subset='geneSymbol', keep='first')
